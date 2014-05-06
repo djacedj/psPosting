@@ -6,8 +6,6 @@ var psPostingControllers = angular.module('psPostingControllers', ['ui.bootstrap
 
 psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
     function($scope, Brand, $fileUploader) {
-        $scope.hola = "HOLA PSPOSTING";
-        $scope.opinion = 'Escribe aquí tu opinión';
         $scope.orderProp = 'name';
 
         $scope.brands = Brand.query();
@@ -23,7 +21,7 @@ psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
         });
 
         // Images only
-        uploader.filters.push(function(item /*{File|HTMLInputElement}*/) {
+        uploader.filters.push(function(item) {
             var type = uploader.isHTML5 ? item.type : '/' + item.value.slice(item.value.lastIndexOf('.') + 1);
             type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|';
             if (!('|jpg|png|jpeg|gif|'.indexOf(type) !== -1)) {
@@ -34,15 +32,29 @@ psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
                 alert("Por favor rellena los datos de la imagen");
                 return false;
             }
-            console.info(uploader.getNotUploadedItems().length);
+            if (uploader.getNotUploadedItems().length >= 7) {
+                alert("No se pueden insertar más fotos");
+                return false;
+            }
             return true;
         });
 
+        // Fill data for an image
         uploader.bind('afteraddingfile', function (event, item) {
             item.formData ["name"] = $scope.name;
             item.formData ["brand"] = $scope.brandSelected;
             item.formData ["bodyArea"] = $scope.bodyArea;
+            $scope.name = ""; $scope.brandSelected = ""; $scope.bodyArea = "";
         });
+
+        // Control for submit
+        $scope.sendPropose = function() {
+            if (!$scope.opinion){
+                alert("No nos has dicho que opinas");
+                return false;
+            }
+            uploader.uploadAll();
+        }
 
 
         // REGISTER HANDLERS
