@@ -7,3 +7,11 @@
 #upPhotos{
     background-color:#EEE;
 }
+.thumbs {
+    background-color: #EEEEEE;
+    overflow: hidden;
+}
+.thumb {
+    float: left;
+    margin: 8px 10px;
+}

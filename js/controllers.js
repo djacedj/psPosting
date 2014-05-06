@@ -6,8 +6,6 @@ var psPostingControllers = angular.module('psPostingControllers', ['ui.bootstrap
 
 psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
     function($scope, Brand, $fileUploader) {
-        $scope.hola = "HOLA PSPOSTING";
-        $scope.opinion = 'Escribe aquí tu opinión';
         $scope.orderProp = 'name';
 
         $scope.brands = Brand.query();
@@ -23,16 +21,46 @@ psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
         });
 
         // Images only
-        uploader.filters.push(function(item /*{File|HTMLInputElement}*/) {
+        uploader.filters.push(function(item) {
             var type = uploader.isHTML5 ? item.type : '/' + item.value.slice(item.value.lastIndexOf('.') + 1);
             type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|';
-            return '|jpg|png|jpeg|gif|'.indexOf(type) !== -1;
+            if (!('|jpg|png|jpeg|gif|'.indexOf(type) !== -1)) {
+                alert("El archivo debe ser una imagen");
+                return false;
+            }
+            if (!$scope.name || !$scope.brandSelected || !$scope.bodyArea) {
+                alert("Por favor rellena los datos de la imagen");
+                return false;
+            }
+            if (uploader.getNotUploadedItems().length >= 7) {
+                alert("No se pueden insertar más fotos");
+                return false;
+            }
+            return true;
         });
+
+        // Fill data for an image
+        uploader.bind('afteraddingfile', function (event, item) {
+            item.formData ["name"] = $scope.name;
+            item.formData ["brand"] = $scope.brandSelected;
+            item.formData ["bodyArea"] = $scope.bodyArea;
+            $scope.name = ""; $scope.brandSelected = ""; $scope.bodyArea = "";
+        });
+
+        // Control for submit
+        $scope.sendPropose = function() {
+            if (!$scope.opinion){
+                alert("No nos has dicho que opinas");
+                return false;
+            }
+            uploader.uploadAll();
+        }
+
 
         // REGISTER HANDLERS
 
-        uploader.bind('afteraddingfile', function (event, item) {
-            console.info('After adding a file', item);
+        /*uploader.bind('afteraddingfile', function (event, item) {
+            console.info('Acabo de subir un archivo', item);
         });
 
         uploader.bind('whenaddingfilefailed', function (event, item) {
@@ -40,7 +68,7 @@ psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
         });
 
         uploader.bind('afteraddingall', function (event, items) {
-            console.info('After adding all files', items);
+            console.info('Acabo de subir todos los archivos', items);
         });
 
         uploader.bind('beforeupload', function (event, item) {
@@ -73,6 +101,6 @@ psPostingControllers.controller('MainCtrl', ['$scope', 'Brand', '$fileUploader',
 
         uploader.bind('completeall', function (event, items) {
             console.info('Complete all', items);
-        });
+        });*/
     }
 ]);

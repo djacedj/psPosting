@@ -1,7 +1,7 @@
 <div id="firstPart" class="first-part">
     <div><img src="../img/img-perfil.jpg" style="width:40px" /></div>
     <div>
-        <textarea class="form-control" ng-model="opinion"></textarea>
+        <textarea class="form-control" ng-model="opinion" placeholder="Escribe aquí tu opinión"></textarea>
     </div>
     <a ng-click="showUpImage()">¿Quieres subir alguna foto?</a>
     <div id="upPhotos" style="display: none">
@@ -10,7 +10,7 @@
                 placeholder="Marca" />
         <br /><br />
 
-        <select id="bodyArea" class="col-xs-5">
+        <select id="bodyArea" ng-model="bodyArea" class="col-xs-5">
             <option value="">Zona del cuerpo</option>
             <option value="Tronco">Tronco</option>
             <option value="Piernas">Piernas</option>
@@ -19,17 +19,21 @@
         </select>
         <input ng-file-select type="file"  />
         <br>
-        <div ng-repeat="item in uploader.queue">
-                <strong>{{ item.file.name }}</strong>
-                <!-- Image preview -->
+        <div class="thumbs">
+            <div class="thumb" ng-repeat="item in uploader.queue">
                 <div ng-show="uploader.isHTML5" ng-thumb="{ file: item.file, height: 50 }"></div>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                    <span class="glyphicon glyphicon-trash"></span> Remove
+                </button>
+            </div>
         </div>
+
         <br>
-        <button ng-click="uploader.uploadAll()" type="button" class="btn btn-primary btn-lg">Subir Foto</button>
+        <!--<button ng-click="uploader.uploadAll()" type="button" class="btn btn-primary btn-lg">Subir Foto</button>-->
     </div>
 </div>
 <div id="secondPart">
     <div id="photosUploaded"></div>
     <br>
-    <button type="button" class="btn btn-success">Publicar Propuesta</button>
+    <button type="button" ng-click="sendPropose()" class="btn btn-success">Publicar Propuesta</button>
 </div>
